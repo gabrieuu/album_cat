@@ -4,20 +4,45 @@ import 'package:flutter/widgets.dart';
 import 'package:gatinho_projeto/controllers/cat_controller.dart';
 import 'package:gatinho_projeto/services/cat_service.dart';
 import 'package:gatinho_projeto/services/http/dio_client.dart';
+import 'package:gatinho_projeto/view/mycat_datail.dart';
 import 'package:get/get.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   HomePage({super.key});
 
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  int axisSizeCount = 3;
   CatController controller =
       Get.put(CatController(service: CatService(client: DioClient())));
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Cats"),
+      bottomNavigationBar: BottomAppBar(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          
+          children: [
+            IconButton(onPressed: (){
+               setState(() {
+                (axisSizeCount > 7) ? axisSizeCount = 8 : axisSizeCount++; 
+              });
+            }, icon: Icon(Icons.zoom_out, size: 30,)),
+            Text("$axisSizeCount", style: TextStyle(fontWeight: FontWeight.bold),),
+            IconButton(onPressed: (){
+             
+              setState(() {
+                (axisSizeCount < 2) ? axisSizeCount = 1 : axisSizeCount--;
+              });
+            }, icon: Icon(Icons.zoom_in, size: 30,)),
+          ],
+        ),
       ),
+      
       body: Obx(() => controller.isLoading.value ? _load() : _body()),
     );
   }
@@ -29,15 +54,26 @@ class HomePage extends StatelessWidget {
   _body() {
     return GridView.builder(
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 4,
+        crossAxisCount: axisSizeCount,
       ),
       itemCount: controller.cats.length,
       itemBuilder: (context, index) {
-        return GridTile(
-          
-          child: new InkResponse(
-            child: Image.network(controller.cats[index].url),
-            onTap: (){},
+        return GestureDetector(
+          onLongPress: (){
+            
+          },
+          onTap: (){
+            Get.to(() => MyCatDetails(url: controller.cats[index].url,index: index,));
+          },
+          child: Card(     
+            child: Hero(
+              tag: "img-$index",
+              child: Image.network(
+                controller.cats[index].url,
+                fit: BoxFit.cover,
+                scale: 1,
+              ),
+            ),
           ),
         );
       },
