@@ -14,4 +14,11 @@ class Cat {
       url: json["url"],
     );
   }
+
+   Map<String, dynamic> toJson(){
+    return {
+      "id":id,
+      "url":url,
+    };
+  }
 }

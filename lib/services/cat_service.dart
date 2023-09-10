@@ -7,9 +7,7 @@ class CatService{
    IRequestHttp client;
 
    final url = "https://api.thecatapi.com/v1/images/search?limit=100&api_key=${apiKey}";
-   CatService({required this.client});
-
-    
+   CatService({required this.client});   
 
    Future<List<Cat>> getCats() async{
     final body = await client.get(url) as List;
